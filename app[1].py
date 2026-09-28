@@ -60,7 +60,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Сессиялық жады (Session State) арқылы деректерді жоғалтпау тетігі
+# Сессиялық жады (Session State)
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
@@ -75,7 +75,6 @@ if "wrong_attempts" not in st.session_state:
 if "ban_until" not in st.session_state:
     st.session_state.ban_until = None
 
-# Негізгі тесттер тізімі (Егер бұрын сақталмаса бастапқы деректерді алады)
 if "tests" not in st.session_state:
     st.session_state.tests = [
         {
@@ -96,7 +95,6 @@ if "tests" not in st.session_state:
 if "results" not in st.session_state:
     st.session_state.results = []
 
-# Статистика тарихтары
 for hist_key in ["score_140_history", "math_score_history", "info_score_history", "math_lit_score_history", "history_score_history"]:
     if hist_key not in st.session_state:
         st.session_state[hist_key] = []
@@ -352,7 +350,7 @@ else:
             for test in filtered_tests:
                 with st.container():
                     st.subheader(test["title"])
-                    st.write(f"Сұрақ саны: {len(test['questions'])} / 50")
+                    st.write(f"Сұрақ саны: {len(test['questions'])}")
                     col1, col2 = st.columns(2)
                     with col1:
                         if st.button("Бастау", key=f"start_{test['id']}"):
@@ -515,7 +513,7 @@ else:
                     }
                     st.session_state.tests.append(new_test)
                 
-                st.success("Сұрақ сәтті қосылды! (Ескерту: Сайт бұлтта болғандықтан, мәлімет жоғалмас үшін 'Деректерді басқару (JSON)' арқылы жиі жүктеп не сақтап отырыңыз).")
+                st.success("Сұрақ сәтті қосылды! Деректерді жоғалтпас үшін 'Деректерді басқару (JSON)' арқылы сақтап қоюды ұмытпаңыз.")
             else:
                 st.error("Барлық өрістерді толтырыңыз!")
 
@@ -541,26 +539,26 @@ else:
 
     elif menu == "Деректерді басқару (JSON)":
         st.header("JSON арқылы деректерді сақтау және жүктеу")
-        st.info("💡 **Маңызды кеңес:** Streamlit бұлттық жүйесі сайтты кейде қайта іске қосатындықтан, өз сұрақтарыңызды жоғалтпас үшін 'Тесттерді JSON файлына сақтау' арқылы телефоныңызға немесе компьютеріңізге жиі сақтап қойыңыз!")
+        st.info("💡 **Маңызды:** Streamlit сервері уақытша болғандықтан, өзіңіз жазған сұрақтар мен тесттерді жоғалтпау үшін осы жерден жиі файл түрінде сақтап қойыңыз!")
         
         json_data = json.dumps(st.session_state.tests, ensure_ascii=False, indent=4)
         st.download_button(
-            label="Тесттерді JSON файлына сақтау",
+            label="📥 Тесттерді JSON файлына сақтау",
             data=json_data,
-            file_name="infomat_tests.json",
+            file_name="infomat_tests_backup.json",
             mime="application/json"
         )
         st.markdown("---")
-        uploaded_file = st.file_uploader("JSON файлын жүктеу арқылы қалпына келтіру", type=["json"])
+        uploaded_file = st.file_uploader("📂 JSON файлын жүктеу арқылы қалпына келтіру", type=["json"])
         if uploaded_file is not None:
             try:
                 loaded_tests = json.load(uploaded_file)
                 if isinstance(loaded_tests, list):
                     st.session_state.tests = loaded_tests
-                    st.success("Деректер сәтті қалпына келтірілді!")
+                    st.success("Деректер сәтті қалпына келтірилді!")
                     st.rerun()
                 else:
-                    st.error("Формат қате!")
+                    st.error("Файл форматы қате!")
             except Exception as e:
                 st.error(f"Қате: {e}")
 
